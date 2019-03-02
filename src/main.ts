@@ -35,15 +35,43 @@ type pieceType = null | Piece;
 // -----------------------------------------------------------------------------
 // Classes
 // -----------------------------------------------------------------------------
+
+class Game {
+  board: Board;
+  player1: Player;
+  player2: Player;
+  turn: Player;
+  isGameOver: boolean;
+
+  constructor(domElement: HTMLElement) {
+    this.board = new Board(domElement);
+    this.render();
+  }
+
+  render() {
+    this.board.render();
+  }
+
+  switchTurn() {
+
+  }
+}
+
+class Player {
+  name: string;
+  color: colorType;
+  turn: boolean;
+}
+
 export class Board {
   row = 8;
   col = 8;
   board: Square[][];
+  domElement: HTMLElement;
 
-  constructor() {
+  constructor(domElement) {
+    this.domElement = domElement;
     this.buildBoard();
-    this.render();
-    console.log(this.board);
   }
 
   buildBoard() {
@@ -72,7 +100,7 @@ export class Board {
       })
       return acc += `<div data-y="${index}" class="row">${row}</div>`;
     }, '');
-    BOARD_DOM.innerHTML = boardHTML;
+    this.domElement.innerHTML = boardHTML;
   }
 }
 
@@ -102,14 +130,4 @@ export abstract class Piece {
   abstract move() :void;
 }
 
-
-
-class Player {
-
-}
-
-class Game {
-
-}
-
-export const board = new Board();
+export const game = new Game(BOARD_DOM);
