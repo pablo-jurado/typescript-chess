@@ -67,24 +67,21 @@ export class Board {
   row = 8;
   col = 8;
   board: Square[][];
+  allPieces: Piece[] = [];
   domElement: HTMLElement;
 
   constructor(domElement) {
     this.domElement = domElement;
     this.buildBoard();
-  }
+    this.createPieces();
+   }
 
   buildBoard() {
     var arr = [];
     for (var i = 0; i < this.row; i++) {
       var rowArr = [];
       for (var j = 0; j < this.col; j++) {
-        var color: colorType;
-        if (i % 2 === j % 2) {
-          color = "white";
-        } else {
-          color = "black";
-        }
+        var color: colorType = (i % 2 === j % 2) ? "white" : "black";
         rowArr.push(new Square( null, color));
       }
       arr.push(rowArr);
@@ -92,11 +89,23 @@ export class Board {
     this.board = arr;
   }
 
+  createPieces() {
+    this.allPieces.push(new Pawn(1, 1, "black"));
+    this.allPieces.push(new Pawn(1, 2, "black"));
+    console.log(this.allPieces);
+  }
+
+
   render() {
     var boardHTML = this.board.reduce(function(acc, item, index) {
       var row = ''
-      item.forEach(function (element) {
-        row += `<div class="${element.color}"></div>`;
+      item.forEach(function(square) {
+        let piece = "";
+        if (square.piece) {
+          let { value } = square.piece;
+          piece = `<div class="game-piece">${value}</div>`;
+        }
+        row += `<div class="${square.color}">${piece}</div>`;
       })
       return acc += `<div data-y="${index}" class="row">${row}</div>`;
     }, '');
@@ -118,16 +127,37 @@ export abstract class Piece {
   x: number;
   y: number;
   color: string;
-  name: string;
+  id: string;
+  abstract value;
 
-  constructor(x, y, color, name) {
+  constructor(x, y, color) {
     this.x = x;
     this.y = y;
     this.color = color;
-    this.name = name;
+    this.id = this.createID();
+  }
+
+
+  createID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   }
 
   abstract move() :void;
+}
+
+class Pawn extends Piece {
+  value: string;
+  constructor(x, y, color) {
+    super(x, y, color);
+    this.value = (color === "white") ? W_PAWN : B_PAWN;
+  }
+
+  move() {
+    console.log("todo!");
+  }
 }
 
 export const game = new Game(BOARD_DOM);
